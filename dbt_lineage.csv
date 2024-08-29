@@ -1,4 +1,4 @@
-model,column_name,column_type,column_description,sql,upstream_models
+model,column_name,column_type,column_description,sql,upstream_models_and_columns
 customers,CUSTOMER_ID,NUMBER,,"with customers as (
 
     select * from {{ ref('stg_customers') }}
@@ -42,7 +42,7 @@ final as (
 
 )
 
-select * from final","stg_customers,stg_orders"
+select * from final","stg_customers: CUSTOMER_ID, FIRST_NAME, LAST_NAME; stg_orders: ORDER_ID, CUSTOMER_ID, ORDER_DATE, STATUS"
 customers,FIRST_NAME,TEXT,,"with customers as (
 
     select * from {{ ref('stg_customers') }}
@@ -86,7 +86,7 @@ final as (
 
 )
 
-select * from final","stg_customers,stg_orders"
+select * from final","stg_customers: CUSTOMER_ID, FIRST_NAME, LAST_NAME; stg_orders: ORDER_ID, CUSTOMER_ID, ORDER_DATE, STATUS"
 customers,LAST_NAME,TEXT,,"with customers as (
 
     select * from {{ ref('stg_customers') }}
@@ -130,7 +130,7 @@ final as (
 
 )
 
-select * from final","stg_customers,stg_orders"
+select * from final","stg_customers: CUSTOMER_ID, FIRST_NAME, LAST_NAME; stg_orders: ORDER_ID, CUSTOMER_ID, ORDER_DATE, STATUS"
 customers,FIRST_ORDER_DATE,DATE,,"with customers as (
 
     select * from {{ ref('stg_customers') }}
@@ -174,7 +174,7 @@ final as (
 
 )
 
-select * from final","stg_customers,stg_orders"
+select * from final","stg_customers: CUSTOMER_ID, FIRST_NAME, LAST_NAME; stg_orders: ORDER_ID, CUSTOMER_ID, ORDER_DATE, STATUS"
 customers,MOST_RECENT_ORDER_DATE,DATE,,"with customers as (
 
     select * from {{ ref('stg_customers') }}
@@ -218,7 +218,7 @@ final as (
 
 )
 
-select * from final","stg_customers,stg_orders"
+select * from final","stg_customers: CUSTOMER_ID, FIRST_NAME, LAST_NAME; stg_orders: ORDER_ID, CUSTOMER_ID, ORDER_DATE, STATUS"
 customers,NUMBER_OF_ORDERS,NUMBER,,"with customers as (
 
     select * from {{ ref('stg_customers') }}
@@ -262,7 +262,7 @@ final as (
 
 )
 
-select * from final","stg_customers,stg_orders"
+select * from final","stg_customers: CUSTOMER_ID, FIRST_NAME, LAST_NAME; stg_orders: ORDER_ID, CUSTOMER_ID, ORDER_DATE, STATUS"
 stg_orders,ORDER_ID,NUMBER,,"select
     id as order_id,
     user_id as customer_id,
