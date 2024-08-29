@@ -1,0 +1,421 @@
+{
+  "source.jaffle_shop.jaffle_shop.customers": {
+    "project": "jaffle_shop",
+    "name": "jaffle_shop.customers",
+    "type": "source",
+    "columns": {
+      "ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "FIRST_NAME": {
+        "type": "TEXT",
+        "description": ""
+      },
+      "LAST_NAME": {
+        "type": "TEXT",
+        "description": ""
+      }
+    },
+    "upstream_models": [],
+    "database": "raw",
+    "schema": "jaffle_shop",
+    "materialized": "source"
+  },
+  "source.jaffle_shop.jaffle_shop.orders": {
+    "project": "jaffle_shop",
+    "name": "jaffle_shop.orders",
+    "type": "source",
+    "columns": {
+      "ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "USER_ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "ORDER_DATE": {
+        "type": "DATE",
+        "description": ""
+      },
+      "STATUS": {
+        "type": "TEXT",
+        "description": ""
+      },
+      "_ETL_LOADED_AT": {
+        "type": "TIMESTAMP_NTZ",
+        "description": ""
+      }
+    },
+    "upstream_models": [],
+    "database": "raw",
+    "schema": "jaffle_shop",
+    "materialized": "source"
+  },
+  "source.jaffle_shop.stripe.payment": {
+    "project": "jaffle_shop",
+    "name": "stripe.payment",
+    "type": "source",
+    "columns": {
+      "ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "ORDERID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "PAYMENTMETHOD": {
+        "type": "TEXT",
+        "description": ""
+      },
+      "STATUS": {
+        "type": "TEXT",
+        "description": ""
+      },
+      "AMOUNT": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "CREATED": {
+        "type": "DATE",
+        "description": ""
+      },
+      "_BATCHED_AT": {
+        "type": "TIMESTAMP_NTZ",
+        "description": ""
+      }
+    },
+    "upstream_models": [],
+    "database": "raw",
+    "schema": "stripe",
+    "materialized": "source"
+  },
+  "model.jaffle_shop.customers": {
+    "project": "jaffle_shop",
+    "name": "customers",
+    "type": "model",
+    "columns": {
+      "CUSTOMER_ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "FIRST_NAME": {
+        "type": "TEXT",
+        "description": ""
+      },
+      "LAST_NAME": {
+        "type": "TEXT",
+        "description": ""
+      },
+      "FIRST_ORDER_DATE": {
+        "type": "DATE",
+        "description": ""
+      },
+      "MOST_RECENT_ORDER_DATE": {
+        "type": "DATE",
+        "description": ""
+      },
+      "NUMBER_OF_ORDERS": {
+        "type": "NUMBER",
+        "description": ""
+      }
+    },
+    "upstream_models": [
+      {
+        "id": "model.jaffle_shop.stg_customers",
+        "name": "stg_customers",
+        "type": "model",
+        "columns": [
+          "CUSTOMER_ID",
+          "FIRST_NAME",
+          "LAST_NAME"
+        ]
+      },
+      {
+        "id": "model.jaffle_shop.stg_orders",
+        "name": "stg_orders",
+        "type": "model",
+        "columns": [
+          "ORDER_ID",
+          "CUSTOMER_ID",
+          "ORDER_DATE",
+          "STATUS"
+        ]
+      }
+    ],
+    "sql": "with customers as (\r\n\r\n    select * from {{ ref('stg_customers') }}\r\n\r\n),\r\n\r\norders as (\r\n\r\n    select * from {{ ref('stg_orders') }}\r\n\r\n),\r\n\r\ncustomer_orders as (\r\n\r\n    select\r\n        customer_id,\r\n\r\n        min(order_date) as first_order_date,\r\n        max(order_date) as most_recent_order_date,\r\n        count(order_id) as number_of_orders\r\n\r\n    from orders\r\n\r\n    group by 1\r\n\r\n),\r\n\r\nfinal as (\r\n\r\n    select\r\n        customers.customer_id,\r\n        customers.first_name,\r\n        customers.last_name,\r\n        customer_orders.first_order_date,\r\n        customer_orders.most_recent_order_date,\r\n        coalesce(customer_orders.number_of_orders, 0) as number_of_orders\r\n\r\n    from customers\r\n\r\n    left join customer_orders using (customer_id)\r\n\r\n)\r\n\r\nselect * from final",
+    "database": "analytics",
+    "schema": "PROD",
+    "materialized": "table"
+  },
+  "model.jaffle_shop.stg_payments": {
+    "project": "jaffle_shop",
+    "name": "stg_payments",
+    "type": "model",
+    "columns": {
+      "ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "ORDERID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "PAYMENTMETHOD": {
+        "type": "TEXT",
+        "description": ""
+      },
+      "STATUS": {
+        "type": "TEXT",
+        "description": ""
+      },
+      "AMOUNT": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "CREATED": {
+        "type": "DATE",
+        "description": ""
+      },
+      "_BATCHED_AT": {
+        "type": "TIMESTAMP_NTZ",
+        "description": ""
+      }
+    },
+    "upstream_models": [
+      {
+        "id": "source.jaffle_shop.stripe.payment",
+        "name": "stripe.payment",
+        "type": "source",
+        "columns": [
+          "ID",
+          "ORDERID",
+          "PAYMENTMETHOD",
+          "STATUS",
+          "AMOUNT",
+          "CREATED",
+          "_BATCHED_AT"
+        ]
+      }
+    ],
+    "sql": "select\r\n  ID,\r\n  ORDERID,\r\n  PAYMENTMETHOD,\r\n  STATUS,\r\n  AMOUNT,\r\n  CREATED,\r\n  _BATCHED_AT\r\nfrom {{ source('stripe', 'payment') }}",
+    "database": "analytics",
+    "schema": "PROD",
+    "materialized": "table"
+  },
+  "model.jaffle_shop.cltv": {
+    "project": "jaffle_shop",
+    "name": "cltv",
+    "type": "model",
+    "columns": {
+      "CUSTOMER_ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "TOTAL_REVENUE": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "AVERAGE_ORDER_INTERVAL": {
+        "type": "NUMBER",
+        "description": ""
+      }
+    },
+    "upstream_models": [
+      {
+        "id": "model.jaffle_shop.stg_customers",
+        "name": "stg_customers",
+        "type": "model",
+        "columns": [
+          "CUSTOMER_ID",
+          "FIRST_NAME",
+          "LAST_NAME"
+        ]
+      },
+      {
+        "id": "model.jaffle_shop.stg_orders",
+        "name": "stg_orders",
+        "type": "model",
+        "columns": [
+          "ORDER_ID",
+          "CUSTOMER_ID",
+          "ORDER_DATE",
+          "STATUS"
+        ]
+      },
+      {
+        "id": "model.jaffle_shop.stg_payments",
+        "name": "stg_payments",
+        "type": "model",
+        "columns": [
+          "ID",
+          "ORDERID",
+          "PAYMENTMETHOD",
+          "STATUS",
+          "AMOUNT",
+          "CREATED",
+          "_BATCHED_AT"
+        ]
+      }
+    ],
+    "sql": "with customer_orders as (\r\n  select\r\n    customers.customer_id,\r\n    orders.order_id,\r\n    orders.order_date,\r\n    payments.amount\r\n  from {{ ref('stg_customers') }} customers\r\n  join {{ ref('stg_orders') }} orders on customers.customer_id = orders.customer_id\r\n  join {{ ref('stg_payments') }} payments on orders.order_id = payments.orderid\r\n),\r\ncltv_metrics as (\r\n  select\r\n    customer_id,\r\n    sum(amount) as total_revenue,\r\n    avg(datediff(day, first_order_date, most_recent_order_date)) as average_order_interval\r\n  from customer_orders\r\n  join (\r\n    select\r\n      customer_id,\r\n      min(order_date) as first_order_date,\r\n      max(order_date) as most_recent_order_date\r\n    from customer_orders\r\n    group by customer_id\r\n  ) customer_stats using (customer_id)\r\n  group by customer_id\r\n)\r\nselect\r\n  customer_id,\r\n  total_revenue,\r\n  average_order_interval\r\n  -- Calculate CLTV based on your chosen method (e.g., Cohort Analysis, Average Customer Value)\r\n  -- ...\r\nfrom cltv_metrics",
+    "database": "analytics",
+    "schema": "PROD",
+    "materialized": "table"
+  },
+  "model.jaffle_shop.orderfrequency": {
+    "project": "jaffle_shop",
+    "name": "orderfrequency",
+    "type": "model",
+    "columns": {
+      "CUSTOMER_ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "NUMBER_OF_ORDERS": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "AVERAGE_ORDER_INTERVAL": {
+        "type": "NUMBER",
+        "description": ""
+      }
+    },
+    "upstream_models": [
+      {
+        "id": "model.jaffle_shop.stg_customers",
+        "name": "stg_customers",
+        "type": "model",
+        "columns": [
+          "CUSTOMER_ID",
+          "FIRST_NAME",
+          "LAST_NAME"
+        ]
+      },
+      {
+        "id": "model.jaffle_shop.stg_orders",
+        "name": "stg_orders",
+        "type": "model",
+        "columns": [
+          "ORDER_ID",
+          "CUSTOMER_ID",
+          "ORDER_DATE",
+          "STATUS"
+        ]
+      }
+    ],
+    "sql": "with\r\n    customer_orders as (\r\n        select customers.customer_id, orders.order_id, orders.order_date\r\n        from {{ ref(\"stg_customers\") }} customers\r\n        join\r\n            {{ ref(\"stg_orders\") }} orders on customers.customer_id = orders.customer_id\r\n    ),\r\n    order_frequency as (\r\n        select\r\n            customer_id,\r\n            count(distinct order_id) as number_of_orders,\r\n            datediff(day, min(order_date), max(order_date))\r\n            / count(distinct order_id) as average_order_interval\r\n        from customer_orders\r\n        group by customer_id\r\n    )\r\nselect *\r\nfrom order_frequency",
+    "database": "analytics",
+    "schema": "PROD",
+    "materialized": "table"
+  },
+  "model.jaffle_shop.payment_success_rate": {
+    "project": "jaffle_shop",
+    "name": "payment_success_rate",
+    "type": "model",
+    "columns": {
+      "SUCCESS_RATE": {
+        "type": "NUMBER",
+        "description": ""
+      }
+    },
+    "upstream_models": [
+      {
+        "id": "model.jaffle_shop.stg_payments",
+        "name": "stg_payments",
+        "type": "model",
+        "columns": [
+          "ID",
+          "ORDERID",
+          "PAYMENTMETHOD",
+          "STATUS",
+          "AMOUNT",
+          "CREATED",
+          "_BATCHED_AT"
+        ]
+      }
+    ],
+    "sql": "with payment_stats as (\r\n  select\r\n    payments.orderid,\r\n    case when payments.status = 'success' then 1 else 0 end as is_successful\r\n  from {{ ref('stg_payments') }} payments\r\n),\r\nsuccess_rate as (\r\n  select\r\n    avg(is_successful) as success_rate\r\n  from payment_stats\r\n)\r\nselect * from success_rate",
+    "database": "analytics",
+    "schema": "PROD",
+    "materialized": "table"
+  },
+  "model.jaffle_shop.stg_orders": {
+    "project": "jaffle_shop",
+    "name": "stg_orders",
+    "type": "model",
+    "columns": {
+      "ORDER_ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "CUSTOMER_ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "ORDER_DATE": {
+        "type": "DATE",
+        "description": ""
+      },
+      "STATUS": {
+        "type": "TEXT",
+        "description": ""
+      }
+    },
+    "upstream_models": [
+      {
+        "id": "source.jaffle_shop.jaffle_shop.orders",
+        "name": "jaffle_shop.orders",
+        "type": "source",
+        "columns": [
+          "ID",
+          "USER_ID",
+          "ORDER_DATE",
+          "STATUS",
+          "_ETL_LOADED_AT"
+        ]
+      }
+    ],
+    "sql": "select\r\n    id as order_id,\r\n    user_id as customer_id,\r\n    order_date,\r\n    status\r\n\r\nfrom {{ source('jaffle_shop', 'orders') }}",
+    "database": "analytics",
+    "schema": "PROD",
+    "materialized": "table"
+  },
+  "model.jaffle_shop.stg_customers": {
+    "project": "jaffle_shop",
+    "name": "stg_customers",
+    "type": "model",
+    "columns": {
+      "CUSTOMER_ID": {
+        "type": "NUMBER",
+        "description": ""
+      },
+      "FIRST_NAME": {
+        "type": "TEXT",
+        "description": ""
+      },
+      "LAST_NAME": {
+        "type": "TEXT",
+        "description": ""
+      }
+    },
+    "upstream_models": [
+      {
+        "id": "source.jaffle_shop.jaffle_shop.customers",
+        "name": "jaffle_shop.customers",
+        "type": "source",
+        "columns": [
+          "ID",
+          "FIRST_NAME",
+          "LAST_NAME"
+        ]
+      }
+    ],
+    "sql": "select\r\n    id as customer_id,\r\n    first_name,\r\n    last_name\r\n\r\nfrom {{ source('jaffle_shop', 'customers') }}",
+    "database": "analytics",
+    "schema": "PROD",
+    "materialized": "table"
+  }
+}
