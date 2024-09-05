@@ -1,0 +1,76 @@
+Datasource,Table,Source Column,Field
+Superstore Datasource,Orders,Profit,Profit
+Superstore Datasource,Orders,Profit,Profit Ratio
+Superstore Datasource,Orders,Profit,Profit Ratio
+Superstore Datasource,Orders,Profit,Profit
+Superstore Datasource,Orders,Profit,Profit (bin)
+Superstore Datasource,Orders,Profit,Profit (bin)
+Superstore Datasource,Orders,Product ID,Product ID
+Superstore Datasource,Orders,Product ID,Product ID
+Superstore Datasource,Orders,Region,Region
+Superstore Datasource,Orders,Region,Region
+Superstore Datasource,Orders,Region,Location
+Superstore Datasource,Orders,Region,Location
+Superstore Datasource,Orders,Sales,Profit Ratio
+Superstore Datasource,Orders,Sales,Profit Ratio
+Superstore Datasource,Orders,Sales,Sales
+Superstore Datasource,Orders,Sales,Sales
+Superstore Datasource,Orders,Product Name,Product
+Superstore Datasource,Orders,Product Name,Manufacturer
+Superstore Datasource,Orders,Product Name,Product Name
+Superstore Datasource,Orders,Product Name,Product Name
+Superstore Datasource,Orders,Product Name,Manufacturer
+Superstore Datasource,Orders,Product Name,Product
+Superstore Datasource,Orders,Ship Date,Ship Date
+Superstore Datasource,Orders,Ship Date,Ship Date
+Superstore Datasource,Orders,Customer ID,Customer ID
+Superstore Datasource,Orders,Customer ID,Customer ID
+Superstore Datasource,Orders,City,City
+Superstore Datasource,Orders,City,Location
+Superstore Datasource,Orders,City,City
+Superstore Datasource,Orders,City,Location
+Superstore Datasource,Orders,Discount,Discount
+Superstore Datasource,Orders,Discount,Discount
+Superstore Datasource,Orders,Sub-Category,Product
+Superstore Datasource,Orders,Sub-Category,Sub-Category
+Superstore Datasource,Orders,Sub-Category,Sub-Category
+Superstore Datasource,Orders,Sub-Category,Product
+Superstore Datasource,Orders,Order ID,Order ID
+Superstore Datasource,Orders,Order ID,Order ID
+Superstore Datasource,Orders,Quantity,Quantity
+Superstore Datasource,Orders,Quantity,Quantity
+Superstore Datasource,Orders,Row ID,Row ID
+Superstore Datasource,Orders,Row ID,Row ID
+Superstore Datasource,Orders,State/Province,State/Province
+Superstore Datasource,Orders,State/Province,Location
+Superstore Datasource,Orders,State/Province,State/Province
+Superstore Datasource,Orders,State/Province,Location
+Superstore Datasource,Orders,Order Date,Order Date
+Superstore Datasource,Orders,Order Date,Order Date
+Superstore Datasource,Orders,Category,Product
+Superstore Datasource,Orders,Category,Category
+Superstore Datasource,Orders,Category,Category
+Superstore Datasource,Orders,Category,Product
+Superstore Datasource,Orders,Customer Name,Top Customers by Profit
+Superstore Datasource,Orders,Customer Name,Top Customers by Profit
+Superstore Datasource,Orders,Customer Name,Customer Name
+Superstore Datasource,Orders,Customer Name,Customer Name
+Superstore Datasource,Orders,Country/Region,Country/Region
+Superstore Datasource,Orders,Country/Region,Country/Region
+Superstore Datasource,Orders,Country/Region,Location
+Superstore Datasource,Orders,Country/Region,Location
+Superstore Datasource,Orders,Ship Mode,Ship Mode
+Superstore Datasource,Orders,Ship Mode,Ship Mode
+Superstore Datasource,Orders,Segment,Segment
+Superstore Datasource,Orders,Segment,Segment
+Superstore Datasource,Orders,Postal Code,Postal Code
+Superstore Datasource,Orders,Postal Code,Postal Code
+Superstore Datasource,Orders,Postal Code,Location
+Superstore Datasource,Orders,Postal Code,Location
+Superstore Datasource,People,Person,Person
+Superstore Datasource,People,Region,Region (People)
+Superstore Datasource,People,Region,Region (People)
+Superstore Datasource,Returns,Returned,Returned
+Superstore Datasource,Returns,Returned,Returned
+Superstore Datasource,Returns,Order ID,Order ID (Returns)
+Superstore Datasource,Returns,Order ID,Order ID (Returns)
